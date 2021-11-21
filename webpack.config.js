@@ -3,17 +3,18 @@ const { CleanWebpackPlugin }  = require('clean-webpack-plugin')
 const HTMLWebpackPlugin       = require('html-webpack-plugin')
 const ESLintPlugin            = require('eslint-webpack-plugin')
 const CopyPlugin              = require('copy-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const MiniCssExtractPlugin    = require("mini-css-extract-plugin")
 
 const isProd = process.env.NODE_ENV === 'production'
 const isDev = !isProd
 
 const getFileName = ext => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`
 
+
 module.exports = {
   context: path.resolve(__dirname, 'src'), // source folder
   mode: 'development', // default mode - developer mode
-  entry: './index.js', // the entry point where the main index.js file is located
+  entry: ['@babel/polyfill', './index.js'], // the entry point where the main index.js file is located
   output: { // output point, where the main index.js file exits
     filename: getFileName('js'), // destination file name
     path: path.resolve(__dirname, 'dist') // the path where the final js file is located
@@ -26,6 +27,10 @@ module.exports = {
     },
   },
   devtool: isDev ? 'source-map' : false,
+  devServer: {
+    port: 3000,
+    hot: isDev
+  },
   plugins: [ // an array of plugins used in the webpack assembly
     new CleanWebpackPlugin(),
     new HTMLWebpackPlugin({
@@ -48,7 +53,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: getFileName('css')
     }),
-    // new ESLintPlugin(),
+    new ESLintPlugin(),
   ],
   module: {
     rules: [
